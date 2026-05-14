@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GA4 Premium Dashboard</title>
+    <meta name="description" content="Real-time Google Analytics 4 live dashboard for property 537257415.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background ambient blobs -->
+    <div class="bg-scene" aria-hidden="true">
+        <div class="blob blob-a"></div>
+        <div class="blob blob-b"></div>
+        <div class="blob blob-c"></div>
+    </div>
+
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-brand">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 12L9 6L13 10L21 3" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M21 8V3H16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M3 17H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+                        <path d="M3 21H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.2"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="brand-name">Insight<span>Pro</span></h1>
+                    <p class="brand-sub">Analytics Dashboard</p>
+                </div>
+            </div>
+            <div class="header-meta">
+                <div class="property-badge">
+                    <span class="prop-label">Property</span>
+                    <span class="prop-id">537257415</span>
+                </div>
+                <div class="live-badge" id="live-badge">
+                    <span class="live-dot"></span>
+                    <span id="live-label">Connecting…</span>
+                </div>
+                <button class="refresh-btn" id="refresh-btn" title="Refresh Dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 4V9H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M20 20V15H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M20 9C19.333 7.333 18.167 6.167 16.5 5.5C14.833 4.833 13.167 4.833 11.5 5.5C9.833 6.167 8.667 7.333 8 9L4 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 15C4.667 16.667 5.833 17.833 7.5 18.5C9.167 19.167 10.833 19.167 12.5 18.5C14.167 17.833 15.333 16.667 16 15L20 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- KPI row -->
+        <section class="kpi-row">
+            <div class="kpi-card" id="kpi-active">
+                <div class="kpi-icon kpi-icon-cyan">
+                    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20C4 17 7.6 15 12 15C16.4 15 20 17 20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </div>
+                <div class="kpi-body">
+                    <span class="kpi-label">Active Right Now</span>
+                    <span class="kpi-value" id="active-users">—</span>
+                </div>
+                <div class="kpi-pulse" id="pulse-ring"></div>
+            </div>
+            <div class="kpi-card" id="kpi-sessions">
+                <div class="kpi-icon kpi-icon-purple">
+                    <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/></svg>
+                </div>
+                <div class="kpi-body">
+                    <span class="kpi-label">Sessions (7 Days)</span>
+                    <span class="kpi-value" id="total-sessions">—</span>
+                </div>
+            </div>
+            <div class="kpi-card" id="kpi-pages">
+                <div class="kpi-icon kpi-icon-pink">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="2"/><polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="2"/></svg>
+                </div>
+                <div class="kpi-body">
+                    <span class="kpi-label">Top Page Views</span>
+                    <span class="kpi-value" id="top-page-views">—</span>
+                </div>
+            </div>
+            <div class="kpi-card" id="kpi-mobile">
+                <div class="kpi-icon kpi-icon-green">
+                    <svg viewBox="0 0 24 24" fill="none"><rect x="7" y="2" width="10" height="20" rx="2" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>
+                </div>
+                <div class="kpi-body">
+                    <span class="kpi-label">Mobile Share</span>
+                    <span class="kpi-value" id="mobile-share">—</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- AI Insights -->
+        <section class="ai-section">
+            <div class="ai-card">
+                <div class="ai-header">
+                    <div class="ai-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="ai-title">Gemini AI <span>Strategy</span></h2>
+                        <p class="ai-sub">Tactical growth insights powered by Vertex AI</p>
+                    </div>
+                </div>
+                <div class="ai-content" id="ai-insights">
+                    <div class="ai-loading">Generating tactical insights...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main charts -->
+        <section class="charts-row">
+            <div class="chart-card chart-wide">
+                <div class="chart-header">
+                    <div>
+                        <h2 class="chart-title">Session Trend</h2>
+                        <p class="chart-sub">Last 7 days</p>
+                    </div>
+                    <div class="chart-badge" id="trend-badge"></div>
+                </div>
+                <div class="chart-wrap">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card chart-narrow">
+                <div class="chart-header">
+                    <div>
+                        <h2 class="chart-title">Devices</h2>
+                        <p class="chart-sub">30-day breakdown</p>
+                    </div>
+                </div>
+                <div class="donut-wrap">
+                    <canvas id="deviceChart"></canvas>
+                </div>
+                <div class="device-legend" id="device-legend"></div>
+            </div>
+        </section>
+
+        <!-- Top pages -->
+        <section class="pages-section">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <h2 class="chart-title">Top Content</h2>
+                        <p class="chart-sub">Most viewed pages in 30 days</p>
+                    </div>
+                </div>
+                <div class="page-list" id="page-list">
+                    <div class="skeleton-row"></div>
+                    <div class="skeleton-row"></div>
+                    <div class="skeleton-row"></div>
+                    <div class="skeleton-row"></div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <span>Refreshes every 15 seconds &nbsp;·&nbsp; GA4 Property 537257415</span>
+            <span id="last-updated"></span>
+        </footer>
+    </div>
+
+    <!-- Demo mode banner -->
+    <div class="demo-banner" id="demo-banner" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" width="16"><path d="M12 9v4M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="2"/></svg>
+        Demo Mode — Add service account to GA4 property for live data
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

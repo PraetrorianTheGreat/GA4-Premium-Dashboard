@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GA4 Premium Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="dashboard">
+        <header>
+            <div class="logo">INSIGHT PRO</div>
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                <span id="connection-status">Live: Property 537257415</span>
+            </div>
+        </header>
+
+        <div class="grid">
+            <!-- Real-time Card -->
+            <div class="card card-realtime">
+                <div class="card-title">Active Users Right Now</div>
+                <div class="realtime-value" id="active-users">0</div>
+                <div style="display: flex; align-items: center; color: var(--text-dim); font-size: 14px;">
+                    <span class="pulse"></span>
+                    Live tracking active
+                </div>
+            </div>
+
+            <!-- Session Trend Card -->
+            <div class="card card-trend">
+                <div class="card-title">7-Day Session Trend</div>
+                <div style="height: 180px;">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Top Pages Card -->
+            <div class="card card-pages">
+                <div class="card-title">Top Content (Last 30 Days)</div>
+                <div class="page-list" id="page-list">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+
+            <!-- Device Distribution Card -->
+            <div class="card card-devices">
+                <div class="card-title">Device Distribution</div>
+                <div style="height: 200px;">
+                    <canvas id="deviceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="alert-banner">Running in Demo Mode. Add credentials.json for live GA4 data.</div>
+
+    <script src="script.js"></script>
+</body>
+</html>

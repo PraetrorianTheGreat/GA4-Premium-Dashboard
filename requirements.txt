@@ -1,0 +1,6 @@
+google-analytics-data
+google-cloud-aiplatform
+google-auth
+python-dotenv
+uvicorn
+fastapi
