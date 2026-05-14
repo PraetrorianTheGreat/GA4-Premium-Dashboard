@@ -258,10 +258,10 @@ function updateKPIs(data) {
     const topViews = data.top_pages[0]?.views ?? 0;
     const mobile = data.devices.find(d => d.category.toLowerCase() === 'mobile')?.percentage ?? 0;
 
-    animateValue(activeEl, prevActiveUsers, data.realtime_active_users);
-    animateValue(sessEl, prevTotalSessions, total);
-    animateValue(topEl, prevTopViews, topViews);
-    mobEl.textContent = mobile + '%';
+    if (activeEl) animateValue(activeEl, prevActiveUsers, data.realtime_active_users);
+    if (sessEl) animateValue(sessEl, prevTotalSessions, total);
+    if (topEl) animateValue(topEl, prevTopViews, topViews);
+    if (mobEl) mobEl.textContent = mobile + '%';
 
     prevActiveUsers  = data.realtime_active_users;
     prevTotalSessions = total;
