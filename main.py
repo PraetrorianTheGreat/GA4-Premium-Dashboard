@@ -4,6 +4,7 @@ Serves the /public folder as static files.
 credentials.json is NEVER exposed publicly.
 """
 import os
+import json
 from fastapi import FastAPI, Header, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -65,7 +66,7 @@ app = FastAPI(title="GA4 Premium Dashboard")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_methods=["GET"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
