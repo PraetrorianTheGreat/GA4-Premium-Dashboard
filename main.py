@@ -57,6 +57,12 @@ MOCK_DATA = {
         {"category": "Desktop", "percentage": 35},
         {"category": "Tablet",  "percentage": 7},
     ],
+    "sources": [
+        {"source": "google", "sessions": 1250},
+        {"source": "direct", "sessions": 850},
+        {"source": "linkedin.com", "sessions": 420},
+        {"source": "newsletter", "sessions": 210},
+    ],
     "is_mock": True
 }
 
@@ -163,11 +169,25 @@ async def fetch_dashboard_data():
             for r in dr.rows
         ]
 
+        # 5. Top Sources
+        sr = client.run_report(RunReportRequest(
+            property=f"properties/{PROPERTY_ID}",
+            dimensions=[Dimension(name="sessionSource")],
+            metrics=[Metric(name="sessions")],
+            date_ranges=[DateRange(start_date="30daysAgo", end_date="today")],
+            limit=5,
+        ))
+        sources = [
+            {"source": r.dimension_values[0].value,
+             "sessions": int(r.metric_values[0].value)} for r in sr.rows
+        ]
+
         return {
             "realtime_active_users": active_users,
             "sessions_7d": sessions_7d,
             "top_pages": top_pages,
             "devices": devices,
+            "sources": sources,
             "is_mock": False,
         }
 
@@ -191,6 +211,7 @@ async def get_ai_insights(api_key: str = Depends(verify_api_key)):
     - Active Users: {data.get('realtime_active_users')}
     - Top Pages: {', '.join([f"{p['page']} ({p['views']} views)" for p in data.get('top_pages', [])])}
     - Devices: {', '.join([f"{d['category']} ({d['percentage']}%)" for d in data.get('devices', [])])}
+    - Top Sources: {', '.join([f"{s['source']} ({s['sessions']} sessions)" for s in data.get('sources', [])])}
     
     TASK:
     Analyze the data and provide:

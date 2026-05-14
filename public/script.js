@@ -197,6 +197,29 @@ function buildPageList(pages) {
     });
 }
 
+function buildSourceList(sources) {
+    const container = document.getElementById('source-list');
+    if (!container) return;
+    const max = Math.max(...sources.map(s => s.sessions), 1);
+    container.innerHTML = sources.map(s => `
+        <div class="page-item">
+            <span class="page-url" style="text-transform: capitalize;">${s.source}</span>
+            <div class="page-bar-wrap">
+                <div class="page-bar-bg">
+                    <div class="page-bar-fill" data-pct="${s.sessions / max}"></div>
+                </div>
+                <span class="page-views">${s.sessions.toLocaleString()}</span>
+            </div>
+        </div>
+    `).join('');
+
+    requestAnimationFrame(() => {
+        document.querySelectorAll('#source-list .page-bar-fill').forEach(el => {
+            el.style.transform = `scaleX(${el.dataset.pct})`;
+        });
+    });
+}
+
 async function fetchAIInsights() {
     const el = document.getElementById('ai-insights');
     if (!el) return;
@@ -209,7 +232,10 @@ async function fetchAIInsights() {
         const data = await res.json();
         
         if (data.insights) {
-            el.innerHTML = data.insights;
+            const el1 = document.getElementById('ai-insights');
+            const el2 = document.getElementById('ai-insights-full');
+            if (el1) el1.innerHTML = data.insights;
+            if (el2) el2.innerHTML = data.insights;
         }
     } catch (err) {
         console.error('AI fetch failed:', err);
@@ -291,6 +317,7 @@ async function fetchAndRender() {
         buildTrendChart(trendLabels, data.sessions_7d.map(d => d.sessions));
         buildDeviceChart(data.devices);
         buildPageList(data.top_pages);
+        if (data.sources) buildSourceList(data.sources);
         setLastUpdated();
 
     } catch (err) {
@@ -364,6 +391,20 @@ document.getElementById('refresh-btn')?.addEventListener('click', () => {
     btn.classList.add('loading');
     Promise.all([fetchAndRender(), fetchAIInsights()]).finally(() => {
         setTimeout(() => btn.classList.remove('loading'), 800);
+    });
+});
+
+// SPA Navigation Logic
+document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        // Remove active class from all buttons and sections
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+        
+        // Add active class to clicked button and target section
+        const targetId = btn.getAttribute('data-target');
+        btn.classList.add('active');
+        document.getElementById(targetId)?.classList.add('active');
     });
 });
 
