@@ -263,9 +263,16 @@ async function fetchAIInsights() {
             const el2 = document.getElementById('ai-insights-full');
             if (el1) el1.innerHTML = data.insights;
             if (el2) el2.innerHTML = data.insights;
+        } else if (data.error) {
+            const el1 = document.getElementById('ai-insights');
+            const el2 = document.getElementById('ai-insights-full');
+            if (el1) el1.innerHTML = `<p style="color:var(--red)">AI Error: ${data.error}</p>`;
+            if (el2) el2.innerHTML = `<p style="color:var(--red)">AI Error: ${data.error}</p>`;
         }
     } catch (err) {
         console.error('AI fetch failed:', err);
+        const el2 = document.getElementById('ai-insights-full');
+        if (el2) el2.innerHTML = `<p style="color:var(--red)">AI fetch failed.</p>`;
     }
 }
 
