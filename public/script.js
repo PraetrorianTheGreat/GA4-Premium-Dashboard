@@ -220,6 +220,33 @@ function buildSourceList(sources) {
     });
 }
 
+function buildGeoTable(audience) {
+    const tbody = document.getElementById('geo-tbody');
+    if (!tbody || !audience) return;
+    tbody.innerHTML = audience.map(a => `
+        <tr>
+            <td>${a.country}</td>
+            <td class="right">${a.sessions.toLocaleString()}</td>
+            <td class="right" style="color: ${a.engagement_rate > 50 ? 'var(--green)' : 'var(--text)'}">${a.engagement_rate}%</td>
+            <td class="right">${a.bounce_rate}%</td>
+        </tr>
+    `).join('');
+}
+
+function buildGSCTable(gscData) {
+    const tbody = document.getElementById('gsc-tbody');
+    if (!tbody || !gscData) return;
+    tbody.innerHTML = gscData.map(g => `
+        <tr>
+            <td>${g.query}</td>
+            <td class="right">${g.clicks.toLocaleString()}</td>
+            <td class="right">${g.impressions.toLocaleString()}</td>
+            <td class="right" style="color: var(--cyan)">${g.ctr}%</td>
+            <td class="right">${g.position}</td>
+        </tr>
+    `).join('');
+}
+
 async function fetchAIInsights() {
     const el = document.getElementById('ai-insights');
     if (!el) return;
@@ -266,6 +293,21 @@ function updateKPIs(data) {
     prevActiveUsers  = data.realtime_active_users;
     prevTotalSessions = total;
     prevTopViews = topViews;
+
+    // Audience KPIs
+    if (data.audience && data.audience.length > 0) {
+        const avgEng = (data.audience.reduce((sum, a) => sum + a.engagement_rate, 0) / data.audience.length).toFixed(1);
+        const avgBnc = (data.audience.reduce((sum, a) => sum + a.bounce_rate, 0) / data.audience.length).toFixed(1);
+        const topCountry = data.audience.reduce((max, a) => a.sessions > max.sessions ? a : max, data.audience[0]);
+        
+        const engEl = document.getElementById('avg-engagement');
+        const bncEl = document.getElementById('avg-bounce');
+        const ctyEl = document.getElementById('top-country');
+        
+        if (engEl) engEl.textContent = avgEng + '%';
+        if (bncEl) bncEl.textContent = avgBnc + '%';
+        if (ctyEl) ctyEl.textContent = topCountry.country;
+    }
 
     // Trend badge
     const badge = document.getElementById('trend-badge');
@@ -318,6 +360,8 @@ async function fetchAndRender() {
         buildDeviceChart(data.devices);
         buildPageList(data.top_pages);
         if (data.sources) buildSourceList(data.sources);
+        if (data.audience) buildGeoTable(data.audience);
+        if (data.gsc_data) buildGSCTable(data.gsc_data);
         setLastUpdated();
 
     } catch (err) {

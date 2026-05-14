@@ -1,6 +1,7 @@
 google-analytics-data
 google-cloud-aiplatform
 google-auth
+google-api-python-client
 python-dotenv
 uvicorn
 fastapi
