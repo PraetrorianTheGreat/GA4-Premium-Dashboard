@@ -202,7 +202,10 @@ async function fetchAIInsights() {
     if (!el) return;
     
     try {
-        const res = await fetch(AI_URL);
+        const res = await fetch(AI_URL, {
+            headers: { 'x-api-key': sessionStorage.getItem('dashboard_pwd') || '' }
+        });
+        if (res.status === 401) return; // Handled by main fetch
         const data = await res.json();
         
         if (data.insights) {
@@ -254,7 +257,13 @@ function updateKPIs(data) {
 
 async function fetchAndRender() {
     try {
-        const res = await fetch(API_URL);
+        const res = await fetch(API_URL, {
+            headers: { 'x-api-key': sessionStorage.getItem('dashboard_pwd') || '' }
+        });
+        
+        if (res.status === 401) {
+            throw new Error('Unauthorized');
+        }
         const data = await res.json();
 
         if (data.error && !data.is_mock) {
@@ -290,9 +299,65 @@ async function fetchAndRender() {
     }
 }
 
-// ── Init ──────────────────────────────────────────────────────
-fetchAndRender();
-fetchAIInsights();
+// ── Auth & Init ────────────────────────────────────────────────
+const loginModal = document.getElementById('login-modal');
+const dashContainer = document.getElementById('dashboard-container');
+const loginBtn = document.getElementById('login-btn');
+const pwdInput = document.getElementById('password-input');
+const loginErr = document.getElementById('login-error');
+
+async function attemptLogin(pwd) {
+    sessionStorage.setItem('dashboard_pwd', pwd);
+    try {
+        const res = await fetch(API_URL, { headers: { 'x-api-key': pwd } });
+        if (res.status === 401) {
+            loginErr.textContent = "Incorrect password.";
+            sessionStorage.removeItem('dashboard_pwd');
+            return false;
+        }
+        return true;
+    } catch (e) {
+        loginErr.textContent = "Connection error.";
+        return false;
+    }
+}
+
+async function init() {
+    const savedPwd = sessionStorage.getItem('dashboard_pwd');
+    if (savedPwd) {
+        loginModal.style.display = 'none';
+        dashContainer.style.display = 'block';
+        fetchAndRender();
+        fetchAIInsights();
+        setInterval(fetchAndRender, REFRESH_MS);
+        setInterval(fetchAIInsights, AI_REFRESH_MS);
+    } else {
+        loginModal.style.display = 'flex';
+        dashContainer.style.display = 'none';
+    }
+}
+
+loginBtn?.addEventListener('click', async () => {
+    const pwd = pwdInput.value.trim();
+    if (!pwd) return;
+    
+    loginBtn.textContent = "Checking...";
+    const success = await attemptLogin(pwd);
+    loginBtn.textContent = "Unlock Dashboard";
+    
+    if (success) {
+        loginModal.style.display = 'none';
+        dashContainer.style.display = 'block';
+        fetchAndRender();
+        fetchAIInsights();
+        setInterval(fetchAndRender, REFRESH_MS);
+        setInterval(fetchAIInsights, AI_REFRESH_MS);
+    }
+});
+
+pwdInput?.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') loginBtn.click();
+});
 
 document.getElementById('refresh-btn')?.addEventListener('click', () => {
     const btn = document.getElementById('refresh-btn');
@@ -302,5 +367,4 @@ document.getElementById('refresh-btn')?.addEventListener('click', () => {
     });
 });
 
-setInterval(fetchAndRender, REFRESH_MS);
-setInterval(fetchAIInsights, AI_REFRESH_MS);
+init();

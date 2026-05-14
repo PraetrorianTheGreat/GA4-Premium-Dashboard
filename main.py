@@ -4,7 +4,7 @@ Serves the /public folder as static files.
 credentials.json is NEVER exposed publicly.
 """
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, Header, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -96,9 +96,19 @@ def get_client():
             return None
     return None
 
+# ── Security ──────────────────────────────────────────────────
+async def verify_api_key(x_api_key: str = Header(None)):
+    expected_password = os.environ.get("DASHBOARD_PASSWORD", "Praetorian2026")
+    if not x_api_key or x_api_key != expected_password:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    return x_api_key
+
 # ── API ───────────────────────────────────────────────────────
 @app.get("/api/dashboard")
-async def get_dashboard_data():
+async def get_dashboard_data(api_key: str = Depends(verify_api_key)):
+    return await fetch_dashboard_data()
+
+async def fetch_dashboard_data():
     client = get_client()
 
     if not client:
@@ -168,9 +178,9 @@ async def get_dashboard_data():
         return {"error": err, "is_mock": False}
 
 @app.get("/api/ai-insights")
-async def get_ai_insights():
+async def get_ai_insights(api_key: str = Depends(verify_api_key)):
     # Fetch current data to provide context to the AI
-    data = await get_dashboard_data()
+    data = await fetch_dashboard_data()
     
     # Agentic Decision Prompt
     prompt = f"""
