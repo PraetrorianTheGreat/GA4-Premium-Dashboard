@@ -36,7 +36,7 @@ PUBLIC_DIR      = os.path.join(BASE_DIR, "public")
 PROJECT_ID_GCP  = "eminent-clover-496200-i1"
 LOCATION        = "us-central1"
 vertexai.init(project=PROJECT_ID_GCP, location=LOCATION)
-model = GenerativeModel("gemini-1.5-flash-001")
+model = GenerativeModel("gemini-1.0-pro")
 
 # ── MOCK DATA (shown if credentials missing or 403) ───────────
 MOCK_DATA = {
