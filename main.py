@@ -294,7 +294,7 @@ async def get_ai_insights(api_key: str = Depends(verify_api_key)):
     """
     
     try:
-        response = model.generate_content(prompt)
+        response = await model.generate_content_async(prompt)
         # Clean markdown
         clean_text = response.text.replace('**DECISION:**', '<strong>DECISION:</strong><br>')
         clean_text = clean_text.replace('**REASONING:**', '<br><br><strong>REASONING:</strong><br>')
